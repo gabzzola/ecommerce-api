@@ -1,12 +1,7 @@
 import { Request, Response } from "express";
 import { getFirestore } from "firebase-admin/firestore";
+import { User } from "../models/user.model";
 import { NotFoundError } from "../errors/not-found.error";
-import { ValidationError } from "../errors/validation.error";
-
-type User = {
-    name: string;
-    email: string;
-};
 
 export class UserController {
 
@@ -42,14 +37,6 @@ export class UserController {
 
     static async save(req: Request, res: Response) {
         const user = req.body as User;
-
-        if (!user.name) {
-            throw new ValidationError("O nome é obrigatório!");
-        }
-        if (!user.email) {
-            throw new ValidationError("O email é obrigatório!");
-        }
-        
         const savedUser = await getFirestore().collection("users").add(user);
         res.status(201).send({
             message: `Usuário ${savedUser.id} criado com sucesso!`
