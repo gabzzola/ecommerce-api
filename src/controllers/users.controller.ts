@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { NotFound } from "../errors/not-found.error";
 import { getFirestore } from "firebase-admin/firestore";
 import { ValidationError } from "../errors/validation.error";
 
@@ -12,6 +13,11 @@ export class UserController {
     static async getAll(req: Request, res: Response, next: NextFunction) {
         try {
             const snapshot = await getFirestore().collection("users").get();
+
+            if (snapshot.empty) {
+                throw new NotFound("Nenhum usuário encontrado.");
+            };
+
             const users = snapshot.docs.map(doc => {
                 return {
                     id: doc.id,
@@ -21,31 +27,36 @@ export class UserController {
             res.send(users);
         } catch (error) {
             next(error);
-        };
-    };
+        }
+    }
 
     static async getById(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.params.id;
             const doc = await getFirestore().collection("users").doc(userId).get();
+            
+            if (!doc.exists) {
+                throw new NotFound(`Não há nenhum usuário cadastrado com o ID ${userId}.`)
+            };
+
             res.send({
                 id: doc.id,
                 ...doc.data()
             });
         } catch (error) {
             next(error);
-        };
-    };
+        }
+    }
 
     static async save(req: Request, res: Response, next: NextFunction) {
         try {            
-            const user = req.body;
+            const user = req.body as User;
 
             if (!user.name) {
-                throw new ValidationError("O nome é obrigatório!")
+                throw new ValidationError("O nome é obrigatório!");
             };
             if (!user.email) {
-                throw new ValidationError("O email é obrigatório!")
+                throw new ValidationError("O email é obrigatório!");
             };
             
             const savedUser = await getFirestore().collection("users").add(user);
@@ -54,24 +65,32 @@ export class UserController {
             });
         } catch (error) {
             next(error);
-        };
-    };
+        }
+    }
 
     static async update(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.params.id;
             const user = req.body as User;
-            await getFirestore().collection("users").doc(userId).set({
+            const docRef = getFirestore().collection("users").doc(userId);
+    
+            const doc = await docRef.get();
+            if (!doc.exists) {
+                throw new NotFound(`Não há nenhum usuário cadastrado com o ID ${userId}.`);
+            }
+    
+            await docRef.update({
                 name: user.name,
                 email: user.email
             });
+    
             res.send({
-                message: "Usuário alterado com sucesso!"
+                message: `Usuário ${userId} alterado com sucesso!`,            
             });
         } catch (error) {
             next(error);
-        };
-    };
+        }
+    }
 
     static async delete(req: Request, res: Response, next: NextFunction) {
         try {
@@ -80,6 +99,6 @@ export class UserController {
             res.status(204).end();
         } catch (error) {
             next(error);
-        };
-    };
-};
+        }
+    }
+}
