@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import { NotFound } from "../errors/not-found.error";
+import { NotFoundError } from "../errors/not-found.error";
 import { ValidationError } from "../errors/validation.error";
 import { InternalServerError } from "../errors/internal-server.error";
 
@@ -7,12 +7,12 @@ export const errorHandler = (app: express.Express) => {
     app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
         if (error instanceof ValidationError) {
             return error.send(res);
-        } 
+        }
         
-        if (error instanceof NotFound) {
+        if (error instanceof NotFoundError) {
             return error.send(res);
-        };
+        }
 
         new InternalServerError().send(res);    
     });
-};
+}

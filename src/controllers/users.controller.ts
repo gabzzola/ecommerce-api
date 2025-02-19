@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getFirestore } from "firebase-admin/firestore";
-import { NotFound } from "../errors/not-found.error";
+import { NotFoundError } from "../errors/not-found.error";
 import { ValidationError } from "../errors/validation.error";
 
 type User = {
@@ -14,8 +14,8 @@ export class UserController {
         const snapshot = await getFirestore().collection("users").get();
 
         if (snapshot.empty) {
-            throw new NotFound("Nenhum usuário encontrado.");
-        };
+            throw new NotFoundError("Nenhum usuário encontrado.");
+        }
 
         const users = snapshot.docs.map(doc => {
             return {
@@ -31,8 +31,8 @@ export class UserController {
         const doc = await getFirestore().collection("users").doc(userId).get();
         
         if (!doc.exists) {
-            throw new NotFound(`Não há nenhum usuário cadastrado com o ID ${userId}.`)
-        };
+            throw new NotFoundError(`Não há nenhum usuário cadastrado com o ID ${userId}.`)
+        }
 
         res.send({
             id: doc.id,
@@ -45,10 +45,10 @@ export class UserController {
 
         if (!user.name) {
             throw new ValidationError("O nome é obrigatório!");
-        };
+        }
         if (!user.email) {
             throw new ValidationError("O email é obrigatório!");
-        };
+        }
         
         const savedUser = await getFirestore().collection("users").add(user);
         res.status(201).send({
@@ -63,7 +63,7 @@ export class UserController {
 
         const doc = await docRef.get();
         if (!doc.exists) {
-            throw new NotFound(`Não há nenhum usuário cadastrado com o ID ${userId}.`);
+            throw new NotFoundError(`Não há nenhum usuário cadastrado com o ID ${userId}.`);
         }
 
         await docRef.update({
