@@ -1,8 +1,8 @@
 import { ErrorBase } from "./base.error";
 
-export class ValidationError extends ErrorBase {
+export class NotFound extends ErrorBase {
 
     constructor(message: string) {
-        super(400, message);
+        super(404, message);
     };
 };
