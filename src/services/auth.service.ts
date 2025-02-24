@@ -1,5 +1,6 @@
 import { User } from "../models/user.model";
 import { getAuth } from "firebase-admin/auth";
+import { EmailAlreadyExistsError } from "../errors/email-already-exists.error";
 
 export class AuthService {
 
@@ -9,8 +10,12 @@ export class AuthService {
             email: user.email,
             password: user.password,
             displayName: user.name
+        }).catch(error => {
+            if (error.code === "auth/email-already-exists") {
+                throw new EmailAlreadyExistsError();
+            }
+            throw error;
         });
-
         return newUser.uid;
     }
 }
