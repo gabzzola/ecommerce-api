@@ -32,7 +32,10 @@ export class UserRepository {
     }
 
     async save(user: User): Promise<void> {
-        await this.collection.add(user);        
+        await this.collection.doc(user.id).set({
+            name: user.name,
+            email: user.email
+        });        
     }
 
     async update(user: User): Promise<void> {        
