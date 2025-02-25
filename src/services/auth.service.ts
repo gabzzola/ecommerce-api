@@ -1,11 +1,12 @@
 import { User } from "../models/user.model";
-import { getAuth } from "firebase-admin/auth";
+import { getAuth as getAdminAuth } from "firebase-admin/auth";
+import { getAuth as getFirebaseAuth, signInWithEmailAndPassword, UserCredential } from "firebase/auth";
 import { EmailAlreadyExistsError } from "../errors/email-already-exists.error";
 
 export class AuthService {
 
     async create(user: User): Promise<string> {
-        const auth = getAuth();
+        const auth = getAdminAuth();
         const newUser = await auth.createUser({
             email: user.email,
             password: user.password,
@@ -17,5 +18,9 @@ export class AuthService {
             throw error;
         });
         return newUser.uid;
+    }
+
+    login(email: string, password: string): Promise<UserCredential> {
+        return signInWithEmailAndPassword(getFirebaseAuth(), email, password);
     }
 }

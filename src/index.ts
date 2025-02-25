@@ -1,16 +1,22 @@
 import express from "express";
-import { initializeApp } from "firebase-admin/app";
+import { initializeApp as initializeAdminApp } from "firebase-admin/app";
+import { initializeApp as initializeFirebaseApp } from "firebase/app";
 import { routes } from "./routes/index";
 import { pageNotFoundHandler } from "./middlewares/page-not-found.middleware";
 import { errorHandler } from "./middlewares/error-handler.middleware";
 
-initializeApp();
+initializeAdminApp();
+initializeFirebaseApp({
+	apiKey: process.env.API_KEY
+});
+
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 routes(app);
 pageNotFoundHandler(app);
 errorHandler(app);
 
-app.listen(3000, () => {
-	console.log("Servidor rodando na porta 3000");
+app.listen(PORT, () => {
+	console.log(`Servidor rodando na porta ${PORT}`);
 });
