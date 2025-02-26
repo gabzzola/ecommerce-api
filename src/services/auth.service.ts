@@ -2,6 +2,7 @@ import { User } from "../models/user.model";
 import { getAuth as getAdminAuth } from "firebase-admin/auth";
 import { getAuth as getFirebaseAuth, signInWithEmailAndPassword, UserCredential } from "firebase/auth";
 import { EmailAlreadyExistsError } from "../errors/email-already-exists.error";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 
 export class AuthService {
 
@@ -20,7 +21,13 @@ export class AuthService {
         return newUser.uid;
     }
 
-    login(email: string, password: string): Promise<UserCredential> {
-        return signInWithEmailAndPassword(getFirebaseAuth(), email, password);
+    async login(email: string, password: string): Promise<UserCredential> {
+        return await signInWithEmailAndPassword(getFirebaseAuth(), email, password)
+        .catch(error => {
+            if (error.code === "auth/invalid-credential") {
+                throw new UnauthorizedError();
+            }
+            throw error;
+        });
     }
 }
