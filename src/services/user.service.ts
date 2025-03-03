@@ -1,6 +1,6 @@
+import { AuthService } from "./auth.service";
 import { User } from "../models/user.model";
 import { UserRepository } from "../repositories/user.repository";
-import { AuthService } from "./auth.service";
 import { NotFoundError } from "../errors/not-found.error";
 
 export class UserService {

@@ -1,6 +1,6 @@
-import { User } from "../models/user.model";
 import { getAuth as getAdminAuth } from "firebase-admin/auth";
 import { getAuth as getFirebaseAuth, signInWithEmailAndPassword, UserCredential } from "firebase/auth";
+import { User } from "../models/user.model";
 import { EmailAlreadyExistsError } from "../errors/email-already-exists.error";
 import { UnauthorizedError } from "../errors/unauthorized.error";
 

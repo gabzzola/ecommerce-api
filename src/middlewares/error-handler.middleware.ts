@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import { errors } from "celebrate";
-import { InternalServerError } from "../errors/internal-server.error";
 import { ErrorBase } from "../errors/base.error";
+import { InternalServerError } from "../errors/internal-server.error";
 
 export const errorHandler = (app: express.Express) => {
     app.use(errors());

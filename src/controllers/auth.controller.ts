@@ -1,7 +1,6 @@
 import { Request, Response } from "express-serve-static-core";
 import { AuthService } from "../services/auth.service";
 
-
 export class AuthController {
 
     static async login(req: Request, res: Response) {
